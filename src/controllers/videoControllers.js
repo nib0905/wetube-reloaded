@@ -1,53 +1,31 @@
-const videos = [
-  {
-    title: "Video #1",
-    rating: 5,
-    comments: 2,
-    ceratedAt: "2minutes ago",
-    views: 59,
-    id: 1,
-  },
-  {
-    title: "Video #2",
-    rating: 5,
-    comments: 2,
-    ceratedAt: "2minutes ago",
-    views: 59,
-    id: 2,
-  },
-  {
-    title: "Video #3",
-    rating: 5,
-    comments: 2,
-    ceratedAt: "2minutes ago",
-    views: 59,
-    id: 3,
-  },
-];
+import Video from "../models/Video";
 
-export const trending = (req, res) => {
+//Video.find({}, (error, videos) => {});
+
+export const home = async (req, res) => {
+  const videos = await Video.find({});
+  console.log(videos);
   res.render("home", { pageTitle: "Home", videos });
 };
 
 export const watch = (req, res) => {
   const { id } = req.params;
-  const video = videos[id - 1];
+
   return res.render("watch", {
-    pageTitle: `Watching: ${video.title}`,
-    video,
+    pageTitle: `Watching: `,
   });
 };
 export const getEdit = (req, res) => {
   const { id } = req.params;
-  const video = videos[id - 1];
-  res.render("edit", { pageTitle: `Editing: ${video.title}`, video });
+
+  res.render("edit", { pageTitle: `Editing: ` });
 };
 export const postEdit = (req, res) => {
   const { id } = req.params;
   const { title } = req.body;
 
   // video.title = title은 지금 가짜 데베라 안 됨
-  videos[id - 1].title = title;
+
   return res.redirect(`/videos/${id}`);
 };
 
@@ -55,16 +33,19 @@ export const getUpload = (req, res) => {
   return res.render("upload", { pageTitle: `Upload Video` });
 };
 
-export const postUpload = (req, res) => {
-  const { title } = req.body;
-  const newVideos = {
-    title: title,
-    rating: 0,
-    comments: 0,
-    ceratedAt: "just now",
-    views: 0,
-    id: videos.length + 1,
-  };
-  videos.push(newVideos);
+export const postUpload = async (req, res) => {
+  const { title, description, hashtags } = req.body;
+  console.log(title, description, hashtags);
+  const video = new Video({
+    title,
+    description,
+    createAt: Date.now(),
+    hashtags: hashtags.split(",").map((word) => `#${word}`),
+    meta: {
+      views: 0,
+      rating: 0,
+    },
+  });
+  await video.save();
   return res.redirect("/");
 };
