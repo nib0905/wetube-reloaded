@@ -1,7 +1,19 @@
-//glabal 컨트롤러는 user controller에 들어간다
-// 회원가입을 하는게 user 이므로!
+import User from "../models/User";
 
-export const join = (req, res) => res.send("join");
+export const getJoin = (req, res) => res.render("join", { pageTitle: `Join ` });
+
+export const postJoin = async (req, res) => {
+  const { name, username, email, password, location } = req.body;
+  await User.create({
+    name,
+    username,
+    email,
+    password,
+    location,
+  });
+
+  res.redirect("/login");
+};
 export const edit = (req, res) => res.send("Edit User");
 export const remove = (req, res) => res.send("Remove User");
 export const login = (req, res) => res.send("Login");
