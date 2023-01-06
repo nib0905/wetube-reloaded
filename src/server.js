@@ -1,7 +1,8 @@
 //server.js는 express와 server 관련 부분!
 import express from "express";
-//node_modules에서 "express"를 찾아준다.
+import session from "express-session";
 import morgan from "morgan";
+import { localsMiddleware } from "./middlewares";
 import rootRouter from "./routers/rootRouter";
 import userRouter from "./routers/userRouter";
 import videoRouter from "./routers/videoRouter";
@@ -15,6 +16,30 @@ app.set("views", process.cwd() + "/src/views");
 app.use(logger);
 app.use(express.urlencoded({ extended: true }));
 //express가 form을 이해하게 만드는 middleware 그렇기 때문에 router 보다 앞ㅇ ㅔ써줘야한다.
+
+//session 미들웨어 사이트에 들어오는 모든 걸 기얼하게 됨.
+app.use(
+  session({
+    secret: "hello",
+    resave: true,
+    saveUninitialized: true,
+  })
+);
+
+// app.use((req, res, next) => {
+//   console.log(res);
+//    res에서 locals object 찾기 가능
+//   req.sessionStore.all((error, session) => {
+//     console.log("in server.js", session);
+//     next();
+//   });
+// });
+
+//localmiddelware : session 미들웨어 다음에 오기에 실행가능한 것!
+//그래야지 localsMiddleware가 session object에 접근
+app.use(localsMiddleware);
+
+//router
 app.use("/", rootRouter);
 app.use("/users", userRouter);
 app.use("/videos", videoRouter);
