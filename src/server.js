@@ -1,7 +1,8 @@
 //server.js는 express와 server 관련 부분!
 import express from "express";
-import session from "express-session";
 import morgan from "morgan";
+import session from "express-session";
+import MongoStore from "connect-mongo";
 import { localsMiddleware } from "./middlewares";
 import rootRouter from "./routers/rootRouter";
 import userRouter from "./routers/userRouter";
@@ -23,17 +24,19 @@ app.use(
     secret: "hello",
     resave: true,
     saveUninitialized: true,
+    store: MongoStore.create({ mongoUrl: "mongodb://127.0.0.1:27017/wetube" }),
+    //session mongodb로 저장
   })
 );
 
-// app.use((req, res, next) => {
-//   console.log(res);
-//    res에서 locals object 찾기 가능
-//   req.sessionStore.all((error, session) => {
-//     console.log("in server.js", session);
-//     next();
-//   });
-// });
+app.use((req, res, next) => {
+  //console.log(res);
+  //res에서 locals object 찾기 가능
+  req.sessionStore.all((error, session) => {
+    console.log("in server.js", session);
+    next();
+  });
+});
 
 //localmiddelware : session 미들웨어 다음에 오기에 실행가능한 것!
 //그래야지 localsMiddleware가 session object에 접근

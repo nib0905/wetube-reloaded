@@ -3,6 +3,8 @@ html(lang="ko")
     head   
         title #{pageTitle} | Wetube
         link(rel="stylesheet" href="https://unpkg.com/mvp.css@1.12/mvp.css")
+        ling(rel="icon" href="data:;base64,iVBORw0KGgo=")
+        //- favcon.ico 오류 날 때 
     body 
         header
             h1=pageTitle
@@ -13,6 +15,8 @@ html(lang="ko")
                     if loggedIn 
                         li
                             a(href="logout") Log Out
+                        li 
+                            a(href="/profile") #{loggedInUser.username}
                     else
                         li
                             a(href="/join") Join
