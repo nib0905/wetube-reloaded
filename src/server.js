@@ -8,7 +8,7 @@ import rootRouter from "./routers/rootRouter";
 import userRouter from "./routers/userRouter";
 import videoRouter from "./routers/videoRouter";
 
-console.log(process.cwd());
+//console.log(process.cwd());
 const app = express();
 const logger = morgan("dev");
 
@@ -21,10 +21,11 @@ app.use(express.urlencoded({ extended: true }));
 //session 미들웨어 사이트에 들어오는 모든 걸 기얼하게 됨.
 app.use(
   session({
-    secret: "hello",
-    resave: true,
-    saveUninitialized: true,
-    store: MongoStore.create({ mongoUrl: "mongodb://127.0.0.1:27017/wetube" }),
+    secret: process.env.COOKIE_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    //session이 수정될때만 백엔드에 쿠키를 주게끔 하기 위함.
+    store: MongoStore.create({ mongoUrl: process.env.DB_URL }),
     //session mongodb로 저장
   })
 );
@@ -33,7 +34,7 @@ app.use((req, res, next) => {
   //console.log(res);
   //res에서 locals object 찾기 가능
   req.sessionStore.all((error, session) => {
-    console.log("in server.js", session);
+    //console.log("in server.js", session);
     next();
   });
 });
